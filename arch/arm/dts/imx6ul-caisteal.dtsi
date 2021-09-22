@@ -1,0 +1,207 @@
+//
+// Copyright (C) 2021 Harkirat S Virk
+
+/ {
+	aliases {
+		// spi0 = &qspi;
+	};
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x80000000>;
+	};
+
+	reg_sd2_vmmc: regulator-sd2-vmmc {
+		compatible = "regulator-fixed";
+		regulator-name = "VSD_3V3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+
+	gpio_leds: leds {
+                pinctrl-names = "default";
+                pinctrl-0 = <&pinctrl_leds>;
+                compatible = "gpio-leds";
+
+                green {
+                        label = "green";
+                        gpios = <&gpio1 5 0>;
+                };
+
+                red {
+                        label = "red";
+                        gpios = <&gpio1 2 0>;
+                };
+		
+		amber {
+			label = "amber";
+			gpios = <&gpio1 6 0>;
+		};
+        };
+
+
+};
+
+
+&i2c2 {
+	clock_frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c2>;
+	status = "okay";
+
+};
+
+&i2c1 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c1>;
+	status = "okay";
+
+};
+
+&qspi {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_qspi>;
+	status = "okay";
+
+	flash: m25p80@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "spansion,s25hs512t", "jedec,spi-nor";
+		spi-max-frequency = <40000000>;
+		spi-rx-bus-width = <4>;
+		spi-tx-bus-width = <4>;
+		reg = <0>;
+		spi-mode = <0>;
+                m25p,fast-read;
+		status = "okay";
+
+		partition@uboot {
+                	label = "uboot";
+                	reg = <0x00000000 0x00100000>;
+        	};
+		partition@uboot-env {
+                	label = "uboot-env";
+                	reg = <0x00100000 0x00040000>;
+        	};
+        	partition@kernel-dtb {
+                        label = "kernel-dtb";
+                        reg = <0x00140000 0x00040000>;
+                };
+		partition@kernel {
+                	label = "kernel";
+                	reg = <0x00180000 0x00800000>;
+        	};
+        	partition@root {
+                	label = "root";
+                	reg = <0x00980000 0x03640000>;
+        	};
+
+	};
+};
+
+&snvs_poweroff {
+	status = "okay";
+};
+
+&uart1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart1>;
+	status = "okay";
+};
+
+&usbotg1 {
+	dr_mode = "peripheral";
+	disable-over-current;
+	tpl-support;
+	status = "okay";
+};
+
+&usbphy1 {
+	fsl,tx-d-cal = <106>;
+};
+
+&usdhc2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usdhc2>;
+	vmmc-supply = <&reg_sd2_vmmc>;
+	broken-cd;
+	keep-power-in-suspend;
+	wakeup-source;
+	status = "okay";
+};
+
+&wdog1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_wdog>;
+	fsl,ext-reset-output;
+};
+
+&iomuxc {
+	pinctrl-names = "default";
+
+	pinctrl_i2c1: i2c1grp {
+		fsl,pins = <
+			MX6UL_PAD_UART4_TX_DATA__I2C1_SCL 0x4001b8b0
+			MX6UL_PAD_UART4_RX_DATA__I2C1_SDA 0x4001b8b0
+		>;
+	};
+
+	pinctrl_i2c2: i2c2grp {
+		fsl,pins = <
+			MX6UL_PAD_UART5_TX_DATA__I2C2_SCL 0x4001b8b0
+			MX6UL_PAD_UART5_RX_DATA__I2C2_SDA 0x4001b8b0
+		>;
+	};
+
+	pinctrl_qspi: qspigrp {
+		fsl,pins = <
+			MX6UL_PAD_NAND_WP_B__QSPI_A_SCLK	0x70a1
+			MX6UL_PAD_NAND_READY_B__QSPI_A_DATA00	0x70a1
+			MX6UL_PAD_NAND_CE0_B__QSPI_A_DATA01	0x70a1
+			MX6UL_PAD_NAND_CE1_B__QSPI_A_DATA02	0x70a1
+			MX6UL_PAD_NAND_CLE__QSPI_A_DATA03	0x70a1
+			MX6UL_PAD_NAND_DQS__QSPI_A_SS0_B	0x70a1
+		>;
+	};
+
+	pinctrl_leds: ledsgrp {
+		fsl,pins = <
+			MX6UL_PAD_GPIO1_IO02__GPIO1_IO02	0xd0b0 /* Red LED */
+			MX6UL_PAD_GPIO1_IO05__GPIO1_IO05	0xd0b0 /* Green LED */
+			MX6UL_PAD_GPIO1_IO06__GPIO1_IO06	0xd0b0 /* Amber LED */
+		>;
+	};
+
+
+	pinctrl_uart1: uart1grp {
+		fsl,pins = <
+			MX6UL_PAD_UART1_TX_DATA__UART1_DCE_TX 0x1b0b1
+			MX6UL_PAD_UART1_RX_DATA__UART1_DCE_RX 0x1b0b1
+		>;
+	};
+
+	pinctrl_usdhc2: usdhc2grp {
+		fsl,pins = <
+			MX6UL_PAD_NAND_RE_B__USDHC2_CLK     0x17059
+			MX6UL_PAD_NAND_WE_B__USDHC2_CMD     0x17059
+			MX6UL_PAD_NAND_DATA00__USDHC2_DATA0 0x17059
+			MX6UL_PAD_NAND_DATA01__USDHC2_DATA1 0x17059
+			MX6UL_PAD_NAND_DATA02__USDHC2_DATA2 0x17059
+			MX6UL_PAD_NAND_DATA03__USDHC2_DATA3 0x17059
+			MX6UL_PAD_NAND_DATA04__USDHC2_DATA4 0x17059
+			MX6UL_PAD_NAND_DATA05__USDHC2_DATA5 0x17059
+			MX6UL_PAD_NAND_DATA06__USDHC2_DATA6 0x17059
+			MX6UL_PAD_NAND_DATA07__USDHC2_DATA7 0x17059
+			MX6UL_PAD_NAND_ALE__USDHC2_RESET_B  0x17059
+		>;
+	};
+
+	pinctrl_wdog: wdoggrp {
+		fsl,pins = <
+			MX6UL_PAD_ENET2_RX_ER__WDOG1_WDOG_ANY    0x30b0
+		>;
+	};
+};

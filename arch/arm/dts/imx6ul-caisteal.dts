@@ -1,0 +1,12 @@
+// Copyright (C) 2021 Harkirat S Virk
+
+/dts-v1/;
+
+#include "imx6ul.dtsi"
+#include "imx6ul-caisteal.dtsi"
+
+/ {
+	model = "Freescale i.MX6 UltraLite Caisteal Board";
+	compatible = "fsl,imx6ul-caisteal", "fsl,imx6ul";
+};
+
