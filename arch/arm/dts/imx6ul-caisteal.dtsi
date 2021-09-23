@@ -92,11 +92,11 @@
                 };
 		partition@kernel {
                 	label = "kernel";
-                	reg = <0x00180000 0x00800000>;
+                	reg = <0x00180000 0x00A00000>;
         	};
         	partition@root {
                 	label = "root";
-                	reg = <0x00980000 0x03640000>;
+                	reg = <0x00B80000 0x03480000>;
         	};
 
 	};
