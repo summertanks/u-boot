@@ -158,30 +158,36 @@ dtb-$(CONFIG_ARCH_S5P4418) += \
 	s5p4418-nanopi2.dtb
 
 dtb-$(CONFIG_ARCH_MESON) += \
+	meson-axg-s400.dtb \
+	meson-axg-jethome-jethub-j100.dtb \
 	meson-gxbb-nanopi-k2.dtb \
 	meson-gxbb-odroidc2.dtb \
 	meson-gxbb-nanopi-k2.dtb \
 	meson-gxbb-p200.dtb \
 	meson-gxbb-p201.dtb \
-	meson-gxl-s905x-p212.dtb \
 	meson-gxl-s805x-libretech-ac.dtb \
+	meson-gxl-s905d-libretech-pc.dtb \
+	meson-gxl-s905w-jethome-jethub-j80.dtb \
+	meson-gxl-s905x-khadas-vim.dtb \
 	meson-gxl-s905x-libretech-cc.dtb \
 	meson-gxl-s905x-libretech-cc-v2.dtb \
-	meson-gxl-s905x-khadas-vim.dtb \
-	meson-gxl-s905d-libretech-pc.dtb \
+	meson-gxl-s905x-p212.dtb \
 	meson-gxm-khadas-vim2.dtb \
 	meson-gxm-s912-libretech-pc.dtb \
 	meson-gxm-wetek-core2.dtb \
-	meson-axg-s400.dtb \
-	meson-g12a-u200.dtb \
+	meson-g12a-radxa-zero.dtb \
 	meson-g12a-sei510.dtb \
+	meson-g12a-u200.dtb \
+	meson-g12b-a311d-khadas-vim3.dtb \
 	meson-g12b-gtking.dtb \
 	meson-g12b-gtking-pro.dtb \
+	meson-g12b-gsking-x.dtb \
 	meson-g12b-odroid-n2.dtb \
 	meson-g12b-odroid-n2-plus.dtb \
-	meson-g12b-a311d-khadas-vim3.dtb \
+	meson-sm1-bananapi-m5.dtb \
 	meson-sm1-khadas-vim3l.dtb \
 	meson-sm1-odroid-c4.dtb \
+	meson-sm1-odroid-hc4.dtb \
 	meson-sm1-sei610.dtb
 dtb-$(CONFIG_ARCH_TEGRA) += tegra20-harmony.dtb \
 	tegra20-medcom-wide.dtb \
@@ -930,7 +936,7 @@ endif
 dtb-$(CONFIG_RZA1) += \
 	r7s72100-gr-peach-u-boot.dtb
 
-dtb-$(CONFIG_SOC_KEYSTONE) += keystone-k2hk-evm.dtb \
+dtb-$(CONFIG_ARCH_KEYSTONE) += keystone-k2hk-evm.dtb \
 	keystone-k2l-evm.dtb \
 	keystone-k2e-evm.dtb \
 	keystone-k2g-evm.dtb \
@@ -1091,7 +1097,14 @@ dtb-$(CONFIG_STM32MP15x) += \
 	stm32mp15xx-dhcom-picoitx.dtb \
 	stm32mp15xx-dhcor-avenger96.dtb
 
-dtb-$(CONFIG_SOC_K3_AM6) += k3-am654-base-board.dtb k3-am654-r5-base-board.dtb
+dtb-$(CONFIG_SOC_K3_AM6) += \
+	k3-am654-base-board.dtb \
+	k3-am654-r5-base-board.dtb \
+	k3-am65-iot2050-spl.dtb \
+	k3-am6528-iot2050-basic.dtb \
+	k3-am6528-iot2050-basic-pg2.dtb \
+	k3-am6548-iot2050-advanced.dtb \
+	k3-am6548-iot2050-advanced-pg2.dtb
 dtb-$(CONFIG_SOC_K3_J721E) += k3-j721e-common-proc-board.dtb \
 			      k3-j721e-r5-common-proc-board.dtb \
 			      k3-j7200-common-proc-board.dtb \
@@ -1120,6 +1133,8 @@ dtb-$(CONFIG_TARGET_GE_BX50V3) += \
 
 dtb-$(CONFIG_TARGET_GE_B1X5V2) += imx6dl-b1x5v2.dtb
 dtb-$(CONFIG_TARGET_MX53PPD) += imx53-ppd.dtb
+
+dtb-$(CONFIG_TARGET_VEXPRESS_CA9X4) += vexpress-v2p-ca9.dtb
 
 dtb-$(CONFIG_TARGET_TOTAL_COMPUTE) += total_compute.dtb
 

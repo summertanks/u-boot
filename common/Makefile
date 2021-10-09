@@ -66,7 +66,7 @@ ifdef CONFIG_SPL_DFU
 obj-$(CONFIG_DFU_OVER_USB) += dfu.o
 endif
 obj-$(CONFIG_SPL_LOAD_FIT) += common_fit.o
-obj-$(CONFIG_SPL_NET_SUPPORT) += miiphyutil.o
+obj-$(CONFIG_SPL_NET) += miiphyutil.o
 obj-$(CONFIG_$(SPL_TPL_)OF_LIBFDT) += fdt_support.o
 
 ifdef CONFIG_SPL_USB_HOST
@@ -85,9 +85,9 @@ obj-$(CONFIG_HWCONFIG) += hwconfig.o
 obj-$(CONFIG_BOUNCE_BUFFER) += bouncebuf.o
 ifdef CONFIG_SPL_BUILD
 ifdef CONFIG_TPL_BUILD
-obj-$(CONFIG_TPL_SERIAL_SUPPORT) += console.o
+obj-$(CONFIG_TPL_SERIAL) += console.o
 else
-obj-$(CONFIG_SPL_SERIAL_SUPPORT) += console.o
+obj-$(CONFIG_SPL_SERIAL) += console.o
 endif
 else
 obj-y += console.o
@@ -101,7 +101,7 @@ obj-y += malloc_simple.o
 endif
 endif
 
-obj-y += image.o
+obj-y += image.o image-board.o
 obj-$(CONFIG_$(SPL_TPL_)HASH) += hash.o
 obj-$(CONFIG_ANDROID_AB) += android_ab.o
 obj-$(CONFIG_ANDROID_BOOT_IMAGE) += image-android.o image-android-dt.o

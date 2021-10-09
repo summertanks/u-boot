@@ -52,7 +52,6 @@
 
 #ifdef CONFIG_NAND_ZYNQ
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
-#define CONFIG_SYS_NAND_ONFI_DETECTION
 #endif
 
 #ifdef CONFIG_USB_EHCI_ZYNQ
@@ -65,7 +64,6 @@
 /* enable preboot to be loaded before CONFIG_BOOTDELAY */
 
 /* Boot configuration */
-#define CONFIG_SYS_LOAD_ADDR		0 /* default? */
 
 #ifdef CONFIG_SPL_BUILD
 #define BOOTENV

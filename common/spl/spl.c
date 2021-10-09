@@ -24,6 +24,9 @@
 #include <nand.h>
 #include <fat.h>
 #include <u-boot/crc.h>
+#if CONFIG_IS_ENABLED(BANNER_PRINT)
+#include <timestamp.h>
+#endif
 #include <version.h>
 #include <image.h>
 #include <malloc.h>
@@ -486,7 +489,7 @@ static int spl_common_init(bool setup_malloc)
 		return ret;
 	}
 #endif
-	if (CONFIG_IS_ENABLED(OF_CONTROL) && !CONFIG_IS_ENABLED(OF_PLATDATA)) {
+	if (CONFIG_IS_ENABLED(OF_REAL)) {
 		ret = fdtdec_setup();
 		if (ret) {
 			debug("fdtdec_setup() returned error %d\n", ret);
@@ -623,7 +626,7 @@ static int boot_from_devices(struct spl_image_info *spl_image,
 		if (CONFIG_IS_ENABLED(SHOW_ERRORS))
 			ret = -ENXIO;
 		loader = spl_ll_find_loader(bootdev);
-		if (CONFIG_IS_ENABLED(SERIAL_SUPPORT) &&
+		if (CONFIG_IS_ENABLED(SERIAL) &&
 		    CONFIG_IS_ENABLED(LIBCOMMON_SUPPORT) &&
 		    !IS_ENABLED(CONFIG_SILENT_CONSOLE)) {
 			if (loader)
@@ -773,7 +776,7 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 		spl_invoke_atf(&spl_image);
 		break;
 #endif
-#if CONFIG_IS_ENABLED(OPTEE)
+#if CONFIG_IS_ENABLED(OPTEE_IMAGE)
 	case IH_OS_TEE:
 		debug("Jumping to U-Boot via OP-TEE\n");
 		spl_board_prepare_for_optee(spl_image.fdt_addr);
@@ -821,7 +824,7 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
  */
 void preloader_console_init(void)
 {
-#ifdef CONFIG_SPL_SERIAL_SUPPORT
+#ifdef CONFIG_SPL_SERIAL
 	gd->baudrate = CONFIG_BAUDRATE;
 
 	serial_init();		/* serial communications setup */

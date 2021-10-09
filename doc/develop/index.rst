@@ -12,6 +12,7 @@ Implementation
    bloblist
    ci_testing
    commands
+   config_binding
    devicetree/index
    driver-model/index
    global_data
@@ -55,5 +56,6 @@ Refactoring
 .. toctree::
    :maxdepth: 1
 
+   checkpatch
    coccinelle
    moveconfig
