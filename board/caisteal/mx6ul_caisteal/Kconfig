@@ -8,5 +8,8 @@ if TARGET_MX6UL_CAISTEAL
 
 	config SYS_CONFIG_NAME
 		default "mx6ul_caisteal"
+
+	config IMX_CONFIG
+        	default "board/caisteal/mx6ul_caisteal/imximage.cfg"
 endif
 
