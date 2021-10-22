@@ -25,31 +25,35 @@ export ARCH=arm
 Activities are from home directory, select accordingly
 ```    
     cd <working dir>
-    git clone https://github.com/summertanks/
+    git clone https://github.com/summertanks/u-boot.git
 ```
+
 or alternatively to build from scratch
 ```
-    https://github.com/Freescale/fsl-community-bsp-platform.git
+    git clone https://github.com/Freescale/u-boot-fslc.git  // Check driver compatability
+or  
+	git clone https://github.com/u-boot/u-boot.git    
 ```
 
 ### Creating own repo
 Incase you need to modify repo of own design (starting from sctatch)
 ```
-    cd uboot-caisteal-2019.07
+    cd u-boot // or u-boot-fslc 
     rm -rf .git
     git init
     git config --global user.email "name@example.com"
     git config --global user.name "name"
     git add .
 ```
+
 Modify .gitignore to add /.pc/* after the last line
 ```
     git commit -m "Initial Version"
     git remote add origin https://github.com/<username>/<repo>.git
     git push -u origin master
-    git branch dunfell
-    git push origin dunfell
-    git checkout dunfell
+    git branch v2021.xx			//	or the current version
+    git push origin v2021.xx	
+    git checkout v2021.xx
 ```
 
 ### Build
@@ -57,7 +61,7 @@ Modify .gitignore to add /.pc/* after the last line
 Done from within the working directory (make sure the environment variables are set)
 ```
     make distclean
-    make mx6ul_caisteal_config
+    make mx6ul_caisteal_config	//	incase of new fork start with available machines
     make
 ```
 
@@ -97,29 +101,33 @@ compatible = "fsl,imx6ul-caisteal", "fsl,imx6ul";
 
 arch/arm/mach-imx/mx6/Kconfig
 ```
-    config TARGET_MX6UL_CAISTEAL
-      	bool "mx6ul_caisteal"
+config TARGET_MX6UL_CAISTEAL
+        bool "mx6ul_caisteal"
+        depends on MX6UL
         select BOARD_LATE_INIT
         select DM
         select DM_THERMAL
-        select MX6UL
-	imply CMD_DM
-
-    source "board/caisteal/mx6ul_caisteal/Kconfig"
+        imply CMD_DM
+...
+source "board/caisteal/mx6ul_caisteal/Kconfig"
 ```
 
 board/caisteal/mx6ul_caisteal/Kconfig
 ```
-    if TARGET_MX6UL_CAISTEAL
-	config SYS_BOARD
-	    default "mx6ul_caisteal"
+if TARGET_MX6UL_CAISTEAL
 
-	config SYS_VENDOR
-	    default "caisteal"
+        config SYS_BOARD
+                default "mx6ul_caisteal"
 
-	config SYS_CONFIG_NAME
-	    default "mx6ul_caisteal"
-    endif
+        config SYS_VENDOR
+                default "caisteal"
+
+        config SYS_CONFIG_NAME
+                default "mx6ul_caisteal"
+
+        config IMX_CONFIG
+                default "board/caisteal/mx6ul_caisteal/imximage.cfg"
+endif
 ```
 
 board/caisteal/mx6ul_caisteal/MAINTAINERS
@@ -137,22 +145,12 @@ board/caisteal/mx6ul_caisteal/Makefile
     obj-y  := mx6ul_caisteal.o
 ```
 
-include/configs/mx6caisteal.h (copy from include/configs/mx6ul_14x14_evk.h)
+include/configs/mx6ul_caisteal.h
 ```
-Modify
-	#ifndef __MX6UL_14X14_EVK_CONFIG_H
-	#define __MX6UL_14X14_EVK_CONFIG_H
-to
+Specify .h for __MX6UL_CAISTEAL_CONFIG_H
 	#ifndef __MX6UL_CAISTEAL_CONFIG_H
-	#define __MX6UL_CAISTEAL_CONFIG_H
+...
 
-"findfdt="\
-                        "if test $fdt_file = undefined; then " \
-                                "if test $board_name = CAISTEAL && test $board_rev = MKV; then " \
-                                        "setenv fdt_file imx6ul-caisteal.dtb; fi; " \
-                                "if test $fdt_file = undefined; then " \
-                                        "echo WARNING: Could not determine dtb to use; fi; " \
-                        "fi;\0" \
 
 ```    
 TODO: Real Changes happen above
