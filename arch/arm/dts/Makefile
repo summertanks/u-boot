@@ -823,7 +823,7 @@ dtb-$(CONFIG_MX6UL) += \
 	imx6ul-phytec-segin-ff-rdk-nand.dtb \
 	imx6ul-pico-hobbit.dtb \
 	imx6ul-pico-pi.dtb \
-	imx6ul-caisteal.dtb
+	imx6ul-caisteal.dtb \
 	imx6ul-kontron-n631x-s.dtb \
 	imx6ull-kontron-n641x-s.dtb
 
