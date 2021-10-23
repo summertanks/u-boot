@@ -384,6 +384,7 @@ static int select_ramdisk(bootm_headers_t *images, const char *select, u8 arch,
 	 * address provided in the second bootm argument
 	 * check image type, for FIT images get FIT node.
 	 */
+	rd_addr = hextoul(select, NULL);
 	buf = map_sysmem(rd_addr, 0);
 	processed = false;
 	switch (genimg_get_format(buf)) {
