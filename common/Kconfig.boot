@@ -175,6 +175,13 @@ config SPL_FIT_SIGNATURE_MAX_SIZE
 	  device memory. Assure this size does not extend past expected storage
 	  space.
 
+config SPL_FIT_RSASSA_PSS
+	bool "Support rsassa-pss signature scheme of FIT image contents in SPL"
+	depends on SPL_FIT_SIGNATURE
+	help
+	  Enable this to support the pss padding algorithm as described
+	  in the rfc8017 (https://tools.ietf.org/html/rfc8017) in SPL.
+
 config SPL_LOAD_FIT
 	bool "Enable SPL loading U-Boot as a FIT (basic fitImage features)"
 	select SPL_FIT
@@ -695,6 +702,15 @@ config SHOW_BOOT_PROGRESS
 
 	  -150	common/cmd_nand.c	Incorrect FIT image format
 	  151	common/cmd_nand.c	FIT image format OK
+
+config SPL_SHOW_BOOT_PROGRESS
+	bool "Show boot progress in a board-specific manner"
+	depends on SPL
+	help
+	  Defining this option allows to add some board-specific code (calling
+	  a user-provided function show_boot_progress(int) that enables you to
+	  show the system's boot progress on some display (for example, some
+	  LEDs) on your board. For details see SHOW_BOOT_PROGRESS.
 
 endmenu
 

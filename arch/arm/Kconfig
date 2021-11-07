@@ -82,8 +82,6 @@ config GICV3
 
 config GIC_V3_ITS
 	bool "ARM GICV3 ITS"
-	select REGMAP
-	select SYSCON
 	select IRQ
 	help
 	  ARM GICV3 Interrupt translation service (ITS).
@@ -922,6 +920,27 @@ config ARCH_NEXELL
 	select DM
 	select GPIO_EXTRA_HEADER
 
+config ARCH_APPLE
+	bool "Apple SoCs"
+	select ARM64
+	select BLK
+	select CLK
+	select CMD_USB
+	select DM
+	select DM_KEYBOARD
+	select DM_SERIAL
+	select DM_USB
+	select DM_VIDEO
+	select IOMMU
+	select LINUX_KERNEL_IMAGE_HEADER
+	select OF_CONTROL
+	select OF_BOARD
+	select POSITION_INDEPENDENT
+	select USB
+	imply CMD_DM
+	imply CMD_GPT
+	imply DISTRO_DEFAULTS
+
 config ARCH_OWL
 	bool "Actions Semi OWL SoCs"
 	select DM
@@ -1037,6 +1056,7 @@ config ARCH_SUNXI
 	select OF_CONTROL
 	select OF_SEPARATE
 	select SPECIFY_CONSOLE_INDEX
+	select SPL_SEPARATE_BSS if SPL
 	select SPL_STACK_R if SPL
 	select SPL_SYS_MALLOC_SIMPLE if SPL
 	select SPL_SYS_THUMB_BUILD if !ARM64
@@ -1064,7 +1084,11 @@ config ARCH_SUNXI
 	imply SPL_MMC if MMC
 	imply SPL_POWER
 	imply SPL_SERIAL
+	imply SYSRESET
+	imply SYSRESET_WATCHDOG
+	imply SYSRESET_WATCHDOG_AUTO
 	imply USB_GADGET
+	imply WDT
 
 config ARCH_U8500
 	bool "ST-Ericsson U8500 Series"
@@ -2015,6 +2039,8 @@ config ISW_ENTRY_ADDR
 	  on the device type (secure/non-secure), boot media (xip/non-xip) and
 	  image headers.
 endif
+
+source "arch/arm/mach-apple/Kconfig"
 
 source "arch/arm/mach-aspeed/Kconfig"
 
