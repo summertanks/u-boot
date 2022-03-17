@@ -11,8 +11,6 @@
 
 #define CONFIG_SPL_MAX_SIZE		(124 * 1024)
 #define CONFIG_SYS_MONITOR_LEN		(512 * 1024)
-#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR
-#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300
 
 #ifdef CONFIG_SPL_BUILD
 /*#define CONFIG_ENABLE_DDR_TRAINING_DEBUG*/
@@ -31,23 +29,16 @@
 #undef CONFIG_DM_MMC
 #endif
 
-#define CONFIG_REMAKE_ELF
-
 /* ENET Config */
 /* ENET1 */
 #if defined(CONFIG_CMD_NET)
-#define CONFIG_MII
 #define CONFIG_ETHPRIME			"FEC"
 
 #define CONFIG_FEC_XCV_TYPE		RGMII
 #define CONFIG_FEC_MXC_PHYADDR		1
 #define FEC_QUIRK_ENET_MAC
 
-#define CONFIG_PHY_GIGE
 #define IMX_FEC_BASE			0x30BE0000
-
-#define CONFIG_PHYLIB
-#define CONFIG_PHY_ATHEROS
 #endif
 
 /* Initial environment variables */
@@ -61,7 +52,7 @@
 	"initrd_addr=0x43800000\0"					\
 	"initrd_high=0xffffffffffffffff\0"				\
 	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0"		\
-	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0"	\
+	"mmcpart=1\0"	\
 	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0"			\
 	"mmcautodetect=yes\0"						\
 	"mmcargs=setenv bootargs console=${console} root=${mmcroot}\0 "	\
@@ -87,18 +78,6 @@
 		"${get_cmd} ${loadaddr} ${image}; "			\
 		"booti; "
 
-#define CONFIG_BOOTCOMMAND \
-	"mmc dev ${mmcdev}; if mmc rescan; then "			\
-		"if run loadbootscript; then "				\
-			"run bootscript; "				\
-		"else "							\
-			"if run loadimage; then "			\
-				"run mmcboot; "				\
-			"else run netboot; "				\
-			"fi; "						\
-		"fi; "							\
-	"else booti ${loadaddr} - ${fdt_addr}; fi"
-
 /* Link Definitions */
 
 #define CONFIG_SYS_INIT_RAM_ADDR	0x40000000
@@ -114,10 +93,6 @@
 #define PHYS_SDRAM			0x40000000
 #define PHYS_SDRAM_SIZE			0x80000000	/* 2 GiB DDR */
 
-#define CONFIG_SYS_MEMTEST_START	PHYS_SDRAM
-#define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + \
-					(PHYS_SDRAM_SIZE >> 1))
-
 #define CONFIG_MXC_UART_BASE		UART1_BASE_ADDR
 
 /* Monitor Command Prompt */
@@ -127,16 +102,8 @@
 #define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
 					sizeof(CONFIG_SYS_PROMPT) + 16)
 
-#define CONFIG_IMX_BOOTAUX
-
 #define CONFIG_SYS_FSL_USDHC_NUM	2
 #define CONFIG_SYS_FSL_ESDHC_ADDR	0
-
-#define CONFIG_SYS_MMC_IMG_LOAD_PART	1
-
-#define CONFIG_MXC_GPIO
-
-#define CONFIG_OF_SYSTEM_SETUP
 
 #define CONFIG_SYS_BOOTM_LEN		SZ_128M
 

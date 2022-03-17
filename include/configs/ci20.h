@@ -24,7 +24,6 @@
 
 /* NS16550-ish UARTs */
 #define CONFIG_SYS_NS16550_CLK		48000000
-#define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
 /* Ethernet: davicom DM9000 */
 #define CONFIG_DRIVER_DM9000		1
@@ -36,7 +35,6 @@
 #define CONFIG_SYS_MAXARGS	32		/* Max number of command args */
 #define CONFIG_SYS_BARGSIZE	CONFIG_SYS_CBSIZE
 						/* Boot argument buffer size */
-#define CONFIG_VERSION_VARIABLE			/* U-BOOT version */
 
 /* Miscellaneous configuration options */
 #define CONFIG_SYS_BOOTM_LEN		(64 << 20)
@@ -50,7 +48,5 @@
 #define CONFIG_SPL_BSS_MAX_SIZE		0x00002000 /* 512KB, arbitrary */
 
 #define CONFIG_SPL_START_S_PATH		"arch/mips/mach-jz47xx"
-
-#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x1c	/* 14 KiB offset */
 
 #endif /* __CONFIG_CI20_H__ */

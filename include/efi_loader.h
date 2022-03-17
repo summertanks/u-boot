@@ -342,7 +342,7 @@ struct efi_open_protocol_info_item {
  */
 struct efi_handler {
 	struct list_head link;
-	const efi_guid_t *guid;
+	const efi_guid_t guid;
 	void *protocol_interface;
 	struct list_head open_infos;
 };
@@ -517,6 +517,8 @@ efi_status_t EFIAPI efi_convert_pointer(efi_uintn_t debug_disposition,
 					void **address);
 /* Carve out DT reserved memory ranges */
 void efi_carve_out_dt_rsv(void *fdt);
+/* Purge unused kaslr-seed */
+void efi_try_purge_kaslr_seed(void *fdt);
 /* Called by bootefi to make console interface available */
 efi_status_t efi_console_register(void);
 /* Called by bootefi to make all disk storage accessible as EFI objects */
@@ -525,6 +527,10 @@ efi_status_t efi_disk_register(void);
 efi_status_t efi_rng_register(void);
 /* Called by efi_init_obj_list() to install EFI_TCG2_PROTOCOL */
 efi_status_t efi_tcg2_register(void);
+/* Called by efi_init_obj_list() to install RISCV_EFI_BOOT_PROTOCOL */
+efi_status_t efi_riscv_register(void);
+/* Called by efi_init_obj_list() to do initial measurement */
+efi_status_t efi_tcg2_do_initial_measurement(void);
 /* measure the pe-coff image, extend PCR and add Event Log */
 efi_status_t tcg2_measure_pe_image(void *efi, u64 efi_size,
 				   struct efi_loaded_image_obj *handle,
@@ -549,7 +555,7 @@ void efi_initrd_deregister(void);
  *
  * Called by bootefi to make ACPI tables available
  *
- * @return 0 if OK, -ENOMEM if no memory is available for the tables
+ * Return: 0 if OK, -ENOMEM if no memory is available for the tables
  */
 efi_status_t efi_acpi_register(void);
 /**
@@ -557,7 +563,7 @@ efi_status_t efi_acpi_register(void);
  *
  * Called by bootefi to make SMBIOS tables available
  *
- * @return 0 if OK, -ENOMEM if no memory is available for the tables
+ * Return: 0 if OK, -ENOMEM if no memory is available for the tables
  */
 efi_status_t efi_smbios_register(void);
 
@@ -763,6 +769,7 @@ const struct efi_device_path *efi_dp_last_node(
 efi_status_t efi_dp_split_file_path(struct efi_device_path *full_path,
 				    struct efi_device_path **device_path,
 				    struct efi_device_path **file_path);
+struct efi_device_path *efi_dp_from_uart(void);
 efi_status_t efi_dp_from_name(const char *dev, const char *devnr,
 			      const char *path,
 			      struct efi_device_path **device,
@@ -906,7 +913,8 @@ struct x509_certificate;
 struct pkcs7_message;
 
 bool efi_signature_lookup_digest(struct efi_image_regions *regs,
-				 struct efi_signature_store *db);
+				 struct efi_signature_store *db,
+				 bool dbx);
 bool efi_signature_verify(struct efi_image_regions *regs,
 			  struct pkcs7_message *msg,
 			  struct efi_signature_store *db,
@@ -967,12 +975,12 @@ efi_status_t efi_capsule_authenticate(const void *capsule,
 				      efi_uintn_t capsule_size,
 				      void **image, efi_uintn_t *image_size);
 
-#define EFI_CAPSULE_DIR L"\\EFI\\UpdateCapsule\\"
+#define EFI_CAPSULE_DIR u"\\EFI\\UpdateCapsule\\"
 
 /**
  * Install the ESRT system table.
  *
- * @return	status code
+ * Return:	status code
  */
 efi_status_t efi_esrt_register(void);
 
@@ -988,4 +996,6 @@ efi_status_t efi_esrt_register(void);
  */
 efi_status_t efi_esrt_populate(void);
 efi_status_t efi_load_capsule_drivers(void);
+
+efi_status_t platform_get_eventlog(struct udevice *dev, u64 *addr, u32 *sz);
 #endif /* _EFI_LOADER_H */

@@ -13,8 +13,9 @@
 	#include "fsl-sch-30842.dtsi"
 };
 
-&enetc0 {
+&enetc_port0 {
 	status = "okay";
+	managed = "in-band-status";
 	phy-mode = "usxgmii";
-	phy-handle = <&{/i2c@2000000/fpga@66/mux-mdio@54/mdio@40/phy@02}>;
+	phy-handle = <&{/soc/i2c@2000000/fpga@66/mux-mdio@54/mdio@40/phy@02}>;
 };

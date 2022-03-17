@@ -141,13 +141,10 @@
 #define CONFIG_SYS_FSL_CPC		/* Corenet Platform Cache */
 #define CONFIG_SYS_NUM_CPC		CONFIG_SYS_NUM_DDR_CTLRS
 #define CONFIG_PCIE1			/* PCIE controller 1 */
-#define CONFIG_SYS_PCI_64BIT		/* enable 64-bit PCI resources */
 
 /* Environment in parallel NOR-Flash */
 #define CONFIG_ENV_TOTAL_SIZE		0x040000
 #define ENV_DEL_ADDR		0xebf00000	/*direct for newenv*/
-
-#define CONFIG_SYS_CLK_FREQ	66666666
 
 /*
  * These can be toggled for performance analysis, otherwise use default.
@@ -249,7 +246,6 @@
 /* More NOR Flash params */
 #define CONFIG_SYS_FLASH_QUIET_TEST
 
-#define CONFIG_SYS_MAX_FLASH_BANKS	1	/* number of banks */
 #define CONFIG_SYS_MAX_FLASH_SECT	512	/* sectors per device */
 
 #define CONFIG_SYS_FLASH_EMPTY_INFO
@@ -335,7 +331,6 @@
 #define CONFIG_SYS_CS2_FTIM2	SYS_QRIO_FTIM2
 #define CONFIG_SYS_CS2_FTIM3	SYS_QRIO_FTIM3
 
-#define CONFIG_MISC_INIT_F
 #define CONFIG_HWCONFIG
 
 /* define to use L1 as initial stack */
@@ -363,7 +358,6 @@
  * Retain non-DM serial port for debug purposes.
  */
 #if !defined(CONFIG_DM_SERIAL)
-#define CONFIG_CONS_INDEX	1
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		(get_bus_freq(0) / 2)
@@ -411,10 +405,6 @@ int get_scl(void);
 #define CONFIG_SYS_DPAA_FMAN
 #define CONFIG_SYS_DPAA_PME
 
-/* Default address of microcode for the Linux Fman driver */
-#define CONFIG_SYS_FMAN_FW_ADDR		0xE8020000
-#define CONFIG_SYS_QE_FW_ADDR		0xE8040000
-#define CONFIG_SYS_QE_FMAN_FW_LENGTH	0x10000
 #define CONFIG_SYS_FDT_PAD		(0x3000 + CONFIG_SYS_QE_FMAN_FW_LENGTH)
 
 /* Qman / Bman */

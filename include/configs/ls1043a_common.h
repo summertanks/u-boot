@@ -26,8 +26,6 @@
 #define SPL_NO_IFC
 #endif
 
-#define CONFIG_REMAKE_ELF
-
 #include <asm/arch/stream_id_lsch2.h>
 #include <asm/arch/config.h>
 
@@ -112,17 +110,11 @@
 #endif
 
 /* GPIO */
-#ifdef CONFIG_DM_GPIO
-#ifndef CONFIG_MPC8XXX_GPIO
-#define CONFIG_MPC8XXX_GPIO
-#endif
-#endif
 
 /* IFC */
 #ifndef SPL_NO_IFC
 #if defined(CONFIG_TFABOOT) || \
 	(!defined(CONFIG_QSPI_BOOT) && !defined(CONFIG_SD_BOOT_QSPI))
-#define CONFIG_FSL_IFC
 /*
  * CONFIG_SYS_FLASH_BASE has the final address (core view)
  * CONFIG_SYS_FLASH_BASE_PHYS has the final address (IFC view)
@@ -154,13 +146,6 @@
 #endif
 
 /*  DSPI  */
-#ifndef SPL_NO_DSPI
-#ifdef CONFIG_FSL_DSPI
-#define CONFIG_SPI_FLASH_STMICRO	/* cs0 */
-#define CONFIG_SPI_FLASH_SST		/* cs1 */
-#define CONFIG_SPI_FLASH_EON		/* cs2 */
-#endif
-#endif
 
 /* FMan ucode */
 #ifndef SPL_NO_FMAN
@@ -168,29 +153,6 @@
 #ifdef CONFIG_SYS_DPAA_FMAN
 #define CONFIG_SYS_FM_MURAM_SIZE	0x60000
 
-#ifdef CONFIG_TFABOOT
-#define CONFIG_SYS_FMAN_FW_ADDR		0x900000
-#define CONFIG_SYS_QE_FW_ADDR		0x940000
-
-
-#else
-#if defined(CONFIG_SD_BOOT)
-/*
- * PBL SD boot image should stored at 0x1000(8 blocks), the size of the image is
- * about 1MB (2040 blocks), Env is stored after the image, and the env size is
- * 0x2000 (16 blocks), 8 + 2040 + 16 = 2064, enlarge it to 18432(0x4800).
- */
-#define CONFIG_SYS_FMAN_FW_ADDR		(512 * 0x4800)
-#define CONFIG_SYS_QE_FW_ADDR		(512 * 0x4A00)
-#elif defined(CONFIG_QSPI_BOOT)
-#define CONFIG_SYS_FMAN_FW_ADDR		0x40900000
-#else
-/* FMan fireware Pre-load address */
-#define CONFIG_SYS_FMAN_FW_ADDR		0x60900000
-#define CONFIG_SYS_QE_FW_ADDR		0x60940000
-#endif
-#endif
-#define CONFIG_SYS_QE_FMAN_FW_LENGTH	0x10000
 #define CONFIG_SYS_FDT_PAD		(0x3000 + CONFIG_SYS_QE_FMAN_FW_LENGTH)
 #endif
 #endif
@@ -284,7 +246,6 @@
 		"bootm $load_addr#$board\0"
 
 
-#undef CONFIG_BOOTCOMMAND
 #ifdef CONFIG_TFABOOT
 #define QSPI_NOR_BOOTCOMMAND "run distro_bootcmd; run qspi_bootcmd; "	\
 			   "env exists secureboot && esbc_halt;"
@@ -294,17 +255,6 @@
 			   "env exists secureboot && esbc_halt;"
 #define IFC_NAND_BOOTCOMMAND "run distro_bootcmd; run nand_bootcmd; "	\
 			   "env exists secureboot && esbc_halt;"
-#else
-#if defined(CONFIG_QSPI_BOOT) || defined(CONFIG_SD_BOOT_QSPI)
-#define CONFIG_BOOTCOMMAND "run distro_bootcmd; run qspi_bootcmd; "	\
-			   "env exists secureboot && esbc_halt;"
-#elif defined(CONFIG_SD_BOOT)
-#define CONFIG_BOOTCOMMAND "run distro_bootcmd; run sd_bootcmd; "  \
-			   "env exists secureboot && esbc_halt;"
-#else
-#define CONFIG_BOOTCOMMAND "run distro_bootcmd; run nor_bootcmd; "	\
-			   "env exists secureboot && esbc_halt;"
-#endif
 #endif
 #endif
 

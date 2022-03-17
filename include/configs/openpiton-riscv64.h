@@ -32,12 +32,6 @@
 #define CONFIG_SPL_GD_ADDR 0x85000000
 #endif
 
-/* -------------------------------------------------
- * Environment
- */
-//Disable persistent environment variable storage
-#define CONFIG_ENV_IS_NOWHERE   1
-
 /* ---------------------------------------------------------------------
  * Board boot configuration
  */
@@ -48,12 +42,5 @@
 	"image=boot/Image\0" \
 	"mmcdev=0\0" \
 	"mmcpart=1\0"
-
-#define CONFIG_USE_BOOTCOMMAND
-#define CONFIG_BOOTCOMMAND \
-	"fdt addr ${fdtcontroladdr}; " \
-	"fdt move ${fdtcontroladdr} ${fdt_addr_r}; " \
-	"load mmc ${mmcdev}:${mmcpart} ${kernel_addr_r} ${image}; " \
-	"booti ${kernel_addr_r} - ${fdt_addr_r}; "
 
 #endif/* __CONFIG_H */

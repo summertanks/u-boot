@@ -51,7 +51,7 @@ static const struct efi_device_path_vendor ROOT = {
  * Determine if an MMC device is an SD card.
  *
  * @desc	block device descriptor
- * @return	true if the device is an SD card
+ * Return:	true if the device is an SD card
  */
 static bool is_sd(struct blk_desc *desc)
 {
@@ -223,7 +223,7 @@ struct efi_object *efi_dp_find_obj(struct efi_device_path *dp,
  * Determine the last device path node that is not the end node.
  *
  * @dp		device path
- * @return	last node before the end node if it exists
+ * Return:	last node before the end node if it exists
  *		otherwise NULL
  */
 const struct efi_device_path *efi_dp_last_node(const struct efi_device_path *dp)
@@ -494,7 +494,7 @@ __maybe_unused static unsigned int dp_size(struct udevice *dev)
 	if (!dev || !dev->driver)
 		return sizeof(ROOT);
 
-	switch (dev->driver->id) {
+	switch (device_get_uclass_id(dev)) {
 	case UCLASS_ROOT:
 	case UCLASS_SIMPLE_BUS:
 		/* stop traversing parents at this point: */
@@ -572,14 +572,14 @@ __maybe_unused static unsigned int dp_size(struct udevice *dev)
  *
  * @buf		pointer to the end of the device path
  * @dev		device
- * @return	pointer to the end of the device path
+ * Return:	pointer to the end of the device path
  */
 __maybe_unused static void *dp_fill(void *buf, struct udevice *dev)
 {
 	if (!dev || !dev->driver)
 		return buf;
 
-	switch (dev->driver->id) {
+	switch (device_get_uclass_id(dev)) {
 	case UCLASS_ROOT:
 	case UCLASS_SIMPLE_BUS: {
 		/* stop traversing parents at this point: */
@@ -759,9 +759,9 @@ __maybe_unused static void *dp_fill(void *buf, struct udevice *dev)
 		return &udp[1];
 	}
 	default:
-		debug("%s(%u) %s: unhandled device class: %s (%u)\n",
-		      __FILE__, __LINE__, __func__,
-		      dev->name, dev->driver->id);
+		/* If the uclass driver is missing, this will show NULL */
+		log_debug("unhandled device class: %s (%s)\n", dev->name,
+			  dev_get_uclass_name(dev));
 		return dp_fill(buf, dev->parent);
 	}
 }
@@ -769,13 +769,8 @@ __maybe_unused static void *dp_fill(void *buf, struct udevice *dev)
 static unsigned dp_part_size(struct blk_desc *desc, int part)
 {
 	unsigned dpsize;
-	struct udevice *dev;
-	int ret;
+	struct udevice *dev = desc->bdev;
 
-	ret = blk_find_device(desc->if_type, desc->devnum, &dev);
-
-	if (ret)
-		dev = desc->bdev->parent;
 	dpsize = dp_size(dev);
 
 	if (part == 0) /* the actual disk, not a partition */
@@ -866,13 +861,8 @@ static void *dp_part_node(void *buf, struct blk_desc *desc, int part)
  */
 static void *dp_part_fill(void *buf, struct blk_desc *desc, int part)
 {
-	struct udevice *dev;
-	int ret;
+	struct udevice *dev = desc->bdev;
 
-	ret = blk_find_device(desc->if_type, desc->devnum, &dev);
-
-	if (ret)
-		dev = desc->bdev->parent;
 	buf = dp_fill(buf, dev);
 
 	if (part == 0) /* the actual disk, not a partition */

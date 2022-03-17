@@ -108,8 +108,6 @@
 		"fi; " \
 	"fi; " \
 	"else run netboot; fi"
-#define CONFIG_BOOTCOMMAND \
-	"run autoboot"
 
 #define CONFIG_ARP_TIMEOUT     200UL
 
@@ -132,13 +130,6 @@
 #define CONFIG_SYS_NAND_U_BOOT_START	CONFIG_SYS_TEXT_BASE
 #define CONFIG_SYS_NAND_SPL_KERNEL_OFFS 0x00500000
 
-/* MTD device */
-
-/* DMA stuff, needed for GPMI/MXS NAND support */
-
-/* EEPROM  contains serial no, MAC addr and other Logic PD info */
-#define CONFIG_I2C_EEPROM
-
 /* USB Configs */
 #ifdef CONFIG_CMD_USB
 #define CONFIG_EHCI_HCD_INIT_AFTER_RESET
@@ -155,6 +146,5 @@
 /* Falcon Mode - MMC support: args@1MB kernel@2MB */
 #define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTOR  0x800   /* 1MB */
 #define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTORS (CONFIG_CMD_SPL_WRITE_SIZE / 512)
-#define CONFIG_SYS_MMCSD_RAW_MODE_KERNEL_SECTOR        0x1000  /* 2MB */
 
 #endif                         /* __IMX6LOGIC_CONFIG_H */

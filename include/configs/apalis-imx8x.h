@@ -10,8 +10,6 @@
 #include <linux/sizes.h>
 #include <linux/stringify.h>
 
-#define CONFIG_REMAKE_ELF
-
 #define CONFIG_SYS_FSL_ESDHC_ADDR	0
 #define USDHC1_BASE_ADDR		0x5b010000
 #define USDHC2_BASE_ADDR		0x5b020000
@@ -77,7 +75,7 @@
 	"mmcargs=setenv bootargs ${consoleargs} " \
 		"root=PARTUUID=${uuid} rootwait " \
 	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
-	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
+	"mmcpart=1\0" \
 	"netargs=setenv bootargs ${consoleargs} " \
 		"root=/dev/nfs ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp " \
 		"${vidargs}\0" \
@@ -99,8 +97,6 @@
 
 /* Environment in eMMC, before config block at the end of 1st "boot sector" */
 
-#define CONFIG_SYS_MMC_IMG_LOAD_PART	1
-
 /* On Apalis iMX8X USDHC1 is eMMC, USDHC2 is 4-bit SD */
 #define CONFIG_SYS_FSL_USDHC_NUM	2
 
@@ -113,7 +109,6 @@
 #define PHYS_SDRAM_2_SIZE		0x00000000	/* 0 GB */
 
 /* Monitor Command Prompt */
-#define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #define CONFIG_SYS_CBSIZE		SZ_2K
 #define CONFIG_SYS_MAXARGS		64
 #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE

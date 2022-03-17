@@ -123,8 +123,7 @@ int board_fix_fdt(void *fdt)
 	if (IS_SVR_REV(get_svr(), 1, 0))
 		return 0;
 
-	off = fdt_node_offset_by_compatible(fdt, -1, "fsl,lx2160a-pcie");
-	while (off != -FDT_ERR_NOTFOUND) {
+	fdt_for_each_node_by_compatible(off, fdt, -1, "fsl,lx2160a-pcie") {
 		fdt_setprop(fdt, off, "compatible", "fsl,ls-pcie",
 			    strlen("fsl,ls-pcie") + 1);
 
@@ -166,8 +165,6 @@ int board_fix_fdt(void *fdt)
 		}
 
 		fdt_setprop(fdt, off, "reg-names", reg_names, names_len);
-		off = fdt_node_offset_by_compatible(fdt, off,
-						    "fsl,lx2160a-pcie");
 	}
 
 	return 0;
@@ -825,9 +822,17 @@ int ft_board_setup(void *blob, struct bd_info *bd)
 	u64 mc_memory_base = 0;
 	u64 mc_memory_size = 0;
 	u16 total_memory_banks;
+	int err;
 #if CONFIG_IS_ENABLED(TARGET_LX2160ARDB)
 	u8 board_rev;
 #endif
+
+	err = fdt_increase_size(blob, 512);
+	if (err) {
+		printf("%s fdt_increase_size: err=%s\n", __func__,
+		       fdt_strerror(err));
+		return err;
+	}
 
 	ft_cpu_setup(blob, bd);
 

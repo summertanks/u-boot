@@ -5,17 +5,8 @@
 
 #define CONFIG_KM_DEF_ARCH	"arch=ppc_82xx\0"
 
-/*
- * System Clock Setup
- */
-#define CONFIG_SYS_CLK_FREQ		66000000
-#define CONFIG_83XX_PCICLK		66000000
-
 /* QE microcode/firmware address */
 /* between the u-boot partition and env */
-#ifndef CONFIG_SYS_QE_FW_ADDR
-#define CONFIG_SYS_QE_FW_ADDR   0xF00C0000
-#endif
 
 /*
  * System IO Config

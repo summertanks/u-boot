@@ -66,11 +66,9 @@
 #define CONFIG_SYS_NAND_MASK_CLE		(1 << 22)
 #define CONFIG_SYS_NAND_ENABLE_PIN		AT91_PIN_PC14
 #define CONFIG_SYS_NAND_READY_PIN		AT91_PIN_PC8
-#define CONFIG_SYS_NAND_DRIVER_ECC_LAYOUT
 #endif
 
 /* Ethernet */
-#define CONFIG_MACB
 #define CONFIG_RMII
 #define CONFIG_NET_RETRY_COUNT		20
 #define CONFIG_AT91_WANTS_COMMON_PHY
@@ -79,10 +77,6 @@
 #define DFU_MANIFEST_POLL_TIMEOUT	25000
 
 /* bootstrap + u-boot + env in nandflash */
-
-#define CONFIG_BOOTCOMMAND						\
-	"nand read 0x70000000 0x200000 0x300000;"			\
-	"bootm 0x70000000"
 
 /* Defines for SPL */
 #define CONFIG_SPL_MAX_SIZE		(12 * SZ_1K)

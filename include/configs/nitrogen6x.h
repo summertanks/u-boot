@@ -15,9 +15,6 @@
 
 #define CONFIG_MXC_UART_BASE	       UART2_BASE
 
-/* I2C Configs */
-#define CONFIG_I2C_EDID
-
 /* MMC Configs */
 #define CONFIG_SYS_FSL_ESDHC_ADDR      0
 #define CONFIG_SYS_FSL_USDHC_NUM       2
@@ -26,7 +23,6 @@
  * SATA Configs
  */
 #ifdef CONFIG_CMD_SATA
-#define CONFIG_SYS_SATA_MAX_DEVICE	1
 #define CONFIG_DWC_AHSATA_PORT_ID	0
 #define CONFIG_DWC_AHSATA_BASE_ADDR	SATA_ARB_BASE_ADDR
 #define CONFIG_LBA48

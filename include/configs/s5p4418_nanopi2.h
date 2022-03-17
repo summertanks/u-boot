@@ -77,16 +77,6 @@
  *  System initialize options (board_init_f)
  */
 /* board_init_f->init_sequence, call arch_cpu_init */
-#define CONFIG_ARCH_CPU_INIT
-
-/*-----------------------------------------------------------------------
- * Miscellaneous configurable options
- */
-#ifdef CONFIG_SYS_PROMPT
-#undef CONFIG_SYS_PROMPT
-/* Monitor Command Prompt */
-#define CONFIG_SYS_PROMPT		"nanopi2# "
-#endif
 
 /* Console I/O Buffer Size */
 #define CONFIG_SYS_CBSIZE		1024
@@ -114,16 +104,6 @@
 					 (void *)PHY_BASEADDR_UART3}
 
 /*-----------------------------------------------------------------------
- * PLL
- */
-#define CONFIG_SYS_PLLFIN		24000000UL
-
-/*-----------------------------------------------------------------------
- * Timer
- */
-#define CONFIG_TIMER_SYS_TICK_CH	0
-
-/*-----------------------------------------------------------------------
  * BACKLIGHT
  */
 #ifndef CONFIG_S5P4418_ONEWIRE
@@ -140,8 +120,6 @@
 /*-----------------------------------------------------------------------
  * VIDEO
  */
-
-#define CONFIG_VIDEO_LOGO
 
 #ifdef CONFIG_VIDEO_LOGO
 #ifdef CONFIG_SPLASH_SCREEN

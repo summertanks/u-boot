@@ -85,18 +85,12 @@
  * Ethernet configuration
  *
  */
-#define CONFIG_MACB
 #define CONFIG_RMII			/* use reduced MII inteface */
 #define CONFIG_NET_RETRY_COUNT	20      /* # of DHCP/BOOTP retries */
 #define CONFIG_AT91_WANTS_COMMON_PHY
 
 /* BOOTP and DHCP options */
 #define CONFIG_BOOTP_BOOTFILESIZE
-#define NFSBOOTCOMMAND						\
-	"setenv autoload yes; setenv autoboot yes; "			\
-	"setenv bootargs ${basicargs} ${mtdparts} "			\
-	"root=/dev/nfs ip=dhcp nfsroot=${serverip}:/srv/nfs/rootfs; "	\
-	"dhcp"
 
 #if !defined(CONFIG_SPL_BUILD)
 /* USB configuration */
@@ -117,7 +111,6 @@
 #endif
 
 /* General Boot Parameter */
-#define CONFIG_BOOTCOMMAND		"run flashboot"
 #define CONFIG_SYS_CBSIZE		512
 
 /*

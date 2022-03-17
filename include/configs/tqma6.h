@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2013, 2014, 2017 Markus Niebel <Markus.Niebel@tq-group.com>
  *
- * Configuration settings for the TQ Systems TQMa6<Q,D,DL,S> module.
+ * Configuration settings for the TQ-Systems TQMa6<Q,D,DL,S> module.
  */
 
 #ifndef __CONFIG_H
@@ -119,9 +119,6 @@
 		"fi; fi; "                                                     \
 		"setenv filesize; setenv blkc \0"                              \
 
-#define CONFIG_BOOTCOMMAND \
-	"run mmcboot; run netboot; run panicboot"
-
 #elif defined(CONFIG_TQMA6X_SPI_BOOT)
 
 #define TQMA6_UBOOT_OFFSET		0x400
@@ -205,11 +202,7 @@
 		"setexpr offset ${fdt_start} * "                               \
 			__stringify(TQMA6_SPI_FLASH_SECTOR_SIZE)"; "           \
 		"sf read ${fdt_addr} ${offset} ${size}; "                      \
-		"setenv size ; setenv offset\0"                                \
-
-#define CONFIG_BOOTCOMMAND                                                     \
-	"sf probe; run mmcboot; run netboot; run panicboot"                    \
-
+		"setenv size ; setenv offset\0"
 #else
 
 #error "need to define boot source"

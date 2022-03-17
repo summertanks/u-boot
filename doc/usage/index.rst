@@ -5,6 +5,7 @@ Use U-Boot
    :maxdepth: 1
 
    dfu
+   environment
    fdt_overlays
    fit
    netconsole
@@ -17,6 +18,7 @@ Shell commands
 .. toctree::
    :maxdepth: 1
 
+   acpi
    addrmap
    askenv
    base
@@ -32,6 +34,7 @@ Shell commands
    exit
    false
    fatinfo
+   fatload
    for
    load
    loady
@@ -43,6 +46,7 @@ Shell commands
    qfw
    reset
    sbi
+   sf
    scp03
    setexpr
    size

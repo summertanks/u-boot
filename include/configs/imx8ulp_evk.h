@@ -12,9 +12,6 @@
 #define CONFIG_SYS_BOOTM_LEN		(SZ_64M)
 #define CONFIG_SPL_MAX_SIZE		(148 * 1024)
 #define CONFIG_SYS_MONITOR_LEN		(512 * 1024)
-#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR
-#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300
-#define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION	1
 #define CONFIG_SYS_UBOOT_BASE	(QSPI0_AMBA_BASE + CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR * 512)
 
 #ifdef CONFIG_SPL_BUILD
@@ -29,8 +26,6 @@
 #define CONFIG_SPL_ABORT_ON_RAW_IMAGE /* For RAW image gives a error info not panic */
 
 #endif
-
-#define CONFIG_REMAKE_ELF
 
 /* ENET Config */
 #if defined(CONFIG_FEC_MXC)
@@ -64,7 +59,7 @@
 	"fdtfile=imx8ulp-evk.dtb\0" \
 	"initrd_addr=0x83800000\0"		\
 	"bootm_size=0x10000000\0" \
-	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
+	"mmcpart=1\0" \
 	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
 
 /* Link Definitions */
@@ -74,7 +69,6 @@
 #define CONFIG_SYS_INIT_SP_OFFSET	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
 #define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
-#define CONFIG_ENV_OVERWRITE
 #define CONFIG_MMCROOT			"/dev/mmcblk2p2"
 
 #define CONFIG_SYS_SDRAM_BASE		0x80000000
@@ -82,7 +76,6 @@
 #define PHYS_SDRAM_SIZE			0x80000000 /* 2GB DDR */
 
 /* Monitor Command Prompt */
-#define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #define CONFIG_SYS_CBSIZE		2048
 #define CONFIG_SYS_MAXARGS		64
 #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE

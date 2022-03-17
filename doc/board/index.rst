@@ -9,16 +9,20 @@ Board-specific doc
    actions/index
    advantech/index
    AndesTech/index
+   allwinner/index
    amlogic/index
    apple/index
+   armltd/index
    atmel/index
    congatec/index
    coreboot/index
    emulation/index
    google/index
+   highbank/index
    intel/index
    kontron/index
    microchip/index
+   nokia/index
    nxp/index
    openpiton/index
    qualcomm/index
@@ -33,5 +37,6 @@ Board-specific doc
    tbs/index
    ti/index
    toradex/index
+   variscite/index
    xen/index
    xilinx/index
