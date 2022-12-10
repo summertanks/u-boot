@@ -6,14 +6,15 @@
 
 #include <common.h>
 #include <command.h>
+#include <dm.h>
 #include <env.h>
 #include <image.h>
 #include <log.h>
 #include <malloc.h>
 #include <mapmem.h>
-#include <lcd.h>
 #include <net.h>
 #include <fdt_support.h>
+#include <video.h>
 #include <linux/libfdt.h>
 #include <linux/string.h>
 #include <linux/ctype.h>
@@ -21,7 +22,6 @@
 #include <linux/list.h>
 
 #ifdef CONFIG_DM_RNG
-#include <dm.h>
 #include <rng.h>
 #endif
 
@@ -379,6 +379,7 @@ err:
 
 /**
  * label_boot_fdtoverlay() - Loads fdt overlays specified in 'fdtoverlays'
+ * or 'devicetree-overlay'
  *
  * @ctx: PXE context
  * @label: Label to process
@@ -531,11 +532,10 @@ static int label_boot(struct pxe_context *ctx, struct pxe_label *label)
 		}
 
 		initrd_addr_str = env_get("ramdisk_addr_r");
-		strcpy(initrd_filesize, simple_xtoa(size));
-
-		strncpy(initrd_str, initrd_addr_str, 18);
-		strcat(initrd_str, ":");
-		strncat(initrd_str, initrd_filesize, 9);
+		size = snprintf(initrd_str, sizeof(initrd_str), "%s:%lx",
+				initrd_addr_str, size);
+		if (size >= sizeof(initrd_str))
+			return 1;
 	}
 
 	if (get_relfile_envaddr(ctx, label->kernel, "kernel_addr_r",
@@ -736,7 +736,8 @@ static int label_boot(struct pxe_context *ctx, struct pxe_label *label)
 	kernel_addr_r = genimg_get_kernel_addr(kernel_addr);
 	buf = map_sysmem(kernel_addr_r, 0);
 	/* Try bootm for legacy and FIT format image */
-	if (genimg_get_format(buf) != IMAGE_FORMAT_INVALID)
+	if (genimg_get_format(buf) != IMAGE_FORMAT_INVALID &&
+            IS_ENABLED(CONFIG_CMD_BOOTM))
 		do_bootm(ctx->cmdtp, 0, bootm_argc, bootm_argv);
 	/* Try booting an AArch64 Linux kernel image */
 	else if (IS_ENABLED(CONFIG_CMD_BOOTI))
@@ -808,6 +809,7 @@ static const struct token keywords[] = {
 	{"devicetreedir", T_FDTDIR},
 	{"fdtdir", T_FDTDIR},
 	{"fdtoverlays", T_FDTOVERLAYS},
+	{"devicetree-overlay", T_FDTOVERLAYS},
 	{"ontimeout", T_ONTIMEOUT,},
 	{"ipappend", T_IPAPPEND,},
 	{"background", T_BACKGROUND,},
@@ -1516,8 +1518,13 @@ void handle_pxe_menu(struct pxe_context *ctx, struct pxe_menu *cfg)
 		/* display BMP if available */
 		if (cfg->bmp) {
 			if (get_relfile(ctx, cfg->bmp, image_load_addr, NULL)) {
-				if (CONFIG_IS_ENABLED(CMD_CLS))
-					run_command("cls", 0);
+#if defined(CONFIG_VIDEO)
+				struct udevice *dev;
+
+				err = uclass_first_device_err(UCLASS_VIDEO, &dev);
+				if (!err)
+					video_clear(dev);
+#endif
 				bmp_display(image_load_addr,
 					    BMP_ALIGN_CENTER, BMP_ALIGN_CENTER);
 			} else {

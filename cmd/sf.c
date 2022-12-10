@@ -7,9 +7,9 @@
 
 #include <common.h>
 #include <command.h>
+#include <display_options.h>
 #include <div64.h>
 #include <dm.h>
-#include <flash.h>
 #include <log.h>
 #include <malloc.h>
 #include <mapmem.h>
@@ -91,6 +91,7 @@ static int do_spi_flash_probe(int argc, char *const argv[])
 	unsigned int speed = CONFIG_SF_DEFAULT_SPEED;
 	unsigned int mode = CONFIG_SF_DEFAULT_MODE;
 	char *endp;
+	bool use_dt = true;
 #if CONFIG_IS_ENABLED(DM_SPI_FLASH)
 	struct udevice *new, *bus_dev;
 	int ret;
@@ -117,11 +118,13 @@ static int do_spi_flash_probe(int argc, char *const argv[])
 		speed = simple_strtoul(argv[2], &endp, 0);
 		if (*argv[2] == 0 || *endp != 0)
 			return -1;
+		use_dt = false;
 	}
 	if (argc >= 4) {
 		mode = hextoul(argv[3], &endp);
 		if (*argv[3] == 0 || *endp != 0)
 			return -1;
+		use_dt = false;
 	}
 
 #if CONFIG_IS_ENABLED(DM_SPI_FLASH)
@@ -131,14 +134,18 @@ static int do_spi_flash_probe(int argc, char *const argv[])
 		device_remove(new, DM_REMOVE_NORMAL);
 	}
 	flash = NULL;
-	ret = spi_flash_probe_bus_cs(bus, cs, speed, mode, &new);
-	if (ret) {
+	if (use_dt) {
+		spi_flash_probe_bus_cs(bus, cs, &new);
+		flash = dev_get_uclass_priv(new);
+	} else {
+		flash = spi_flash_probe(bus, cs, speed, mode);
+	}
+
+	if (!flash) {
 		printf("Failed to initialize SPI flash at %u:%u (error %d)\n",
 		       bus, cs, ret);
 		return 1;
 	}
-
-	flash = dev_get_uclass_priv(new);
 #else
 	if (flash)
 		spi_flash_free(flash);
@@ -172,16 +179,18 @@ static const char *spi_flash_update_block(struct spi_flash *flash, u32 offset,
 		size_t len, const char *buf, char *cmp_buf, size_t *skipped)
 {
 	char *ptr = (char *)buf;
+	u32 start_offset = offset % flash->sector_size;
+	u32 read_offset = offset - start_offset;
 
-	debug("offset=%#x, sector_size=%#x, len=%#zx\n",
-	      offset, flash->sector_size, len);
+	debug("offset=%#x+%#x, sector_size=%#x, len=%#zx\n",
+	      read_offset, start_offset, flash->sector_size, len);
 	/* Read the entire sector so to allow for rewriting */
-	if (spi_flash_read(flash, offset, flash->sector_size, cmp_buf))
+	if (spi_flash_read(flash, read_offset, flash->sector_size, cmp_buf))
 		return "read";
 	/* Compare only what is meaningful (len) */
-	if (memcmp(cmp_buf, buf, len) == 0) {
-		debug("Skip region %x size %zx: no change\n",
-		      offset, len);
+	if (memcmp(cmp_buf + start_offset, buf, len) == 0) {
+		debug("Skip region %x+%x size %zx: no change\n",
+		      start_offset, read_offset, len);
 		*skipped += len;
 		return NULL;
 	}
@@ -190,7 +199,7 @@ static const char *spi_flash_update_block(struct spi_flash *flash, u32 offset,
 		return "erase";
 	/* If it's a partial sector, copy the data into the temp-buffer */
 	if (len != flash->sector_size) {
-		memcpy(cmp_buf, buf, len);
+		memcpy(cmp_buf + start_offset, buf, len);
 		ptr = cmp_buf;
 	}
 	/* Write one complete sector */
@@ -231,6 +240,8 @@ static int spi_flash_update(struct spi_flash *flash, u32 offset,
 
 		for (; buf < end && !err_oper; buf += todo, offset += todo) {
 			todo = min_t(size_t, end - buf, flash->sector_size);
+			todo = min_t(size_t, end - buf,
+				     flash->sector_size - (offset % flash->sector_size));
 			if (get_timer(last_update) > 100) {
 				printf("   \rUpdating, %zu%% %lu B/s",
 				       100 - (end - buf) / scale,
@@ -287,6 +298,12 @@ static int do_spi_flash_read_write(int argc, char *const argv[])
 		return 1;
 	}
 
+	if (strncmp(argv[0], "read", 4) != 0 && flash->flash_is_unlocked &&
+	    !flash->flash_is_unlocked(flash, offset, len)) {
+		printf("ERROR: flash area is locked\n");
+		return 1;
+	}
+
 	buf = map_physmem(addr, len, MAP_WRBACK);
 	if (!buf && addr) {
 		puts("Failed to map physical memory\n");
@@ -340,6 +357,12 @@ static int do_spi_flash_erase(int argc, char *const argv[])
 	if (offset + size > flash->size) {
 		printf("ERROR: attempting %s past flash size (%#x)\n",
 		       argv[0], flash->size);
+		return 1;
+	}
+
+	if (flash->flash_is_unlocked &&
+	    !flash->flash_is_unlocked(flash, offset, len)) {
+		printf("ERROR: flash area is locked\n");
 		return 1;
 	}
 
@@ -535,7 +558,7 @@ static int do_spi_flash_test(int argc, char *const argv[])
 		return 1;
 	}
 
-	from = map_sysmem(CONFIG_SYS_TEXT_BASE, 0);
+	from = map_sysmem(CONFIG_TEXT_BASE, 0);
 	memcpy(buf, from, len);
 	ret = spi_flash_test(flash, buf, len, offset, vbuf);
 	free(vbuf);

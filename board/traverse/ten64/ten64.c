@@ -5,6 +5,7 @@
  * Copyright 2019-2021 Traverse Technologies
  */
 #include <common.h>
+#include <display_options.h>
 #include <dm/uclass.h>
 #include <env.h>
 #include <i2c.h>
@@ -60,7 +61,7 @@ int board_early_init_f(void)
 
 static u32 ten64_get_board_rev(void)
 {
-	struct ccsr_gur *dcfg = (void *)CONFIG_SYS_FSL_GUTS_ADDR;
+	struct ccsr_gur *dcfg = (void *)CFG_SYS_FSL_GUTS_ADDR;
 	u32 board_rev_in = in_le32(&dcfg->gpporcr1);
 	return board_rev_in;
 }

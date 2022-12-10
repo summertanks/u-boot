@@ -272,12 +272,7 @@ static void usb_oc_config(struct usbnc_regs *usbnc, int index)
 {
 	void __iomem *ctrl = (void __iomem *)(&usbnc->ctrl[index]);
 
-#if CONFIG_MACH_TYPE == MACH_TYPE_MX6Q_ARM2
-	/* mx6qarm2 seems to required a different setting*/
-	clrbits_le32(ctrl, UCTRL_OVER_CUR_POL);
-#else
 	setbits_le32(ctrl, UCTRL_OVER_CUR_POL);
-#endif
 
 	setbits_le32(ctrl, UCTRL_OVER_CUR_DIS);
 
@@ -731,7 +726,7 @@ static int ehci_usb_probe(struct udevice *dev)
 	mdelay(10);
 
 #if defined(CONFIG_PHY)
-	ret = ehci_setup_phy(dev, &priv->phy, 0);
+	ret = generic_setup_phy(dev, &priv->phy, 0);
 	if (ret)
 		goto err_regulator;
 #endif
@@ -748,7 +743,7 @@ static int ehci_usb_probe(struct udevice *dev)
 
 err_phy:
 #if defined(CONFIG_PHY)
-	ehci_shutdown_phy(dev, &priv->phy);
+	generic_shutdown_phy(&priv->phy);
 err_regulator:
 #endif
 #if CONFIG_IS_ENABLED(DM_REGULATOR)
@@ -772,7 +767,7 @@ int ehci_usb_remove(struct udevice *dev)
 	ehci_deregister(dev);
 
 #if defined(CONFIG_PHY)
-	ehci_shutdown_phy(dev, &priv->phy);
+	generic_shutdown_phy(&priv->phy);
 #endif
 
 #if CONFIG_IS_ENABLED(DM_REGULATOR)

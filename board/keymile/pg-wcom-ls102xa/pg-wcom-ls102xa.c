@@ -4,6 +4,7 @@
  */
 
 #include <common.h>
+#include <event.h>
 #include <i2c.h>
 #include <asm/io.h>
 #include <asm/arch/immap_ls102xa.h>
@@ -49,8 +50,8 @@ int dram_init(void)
 
 int board_early_init_f(void)
 {
-	struct ccsr_scfg *scfg = (struct ccsr_scfg *)CONFIG_SYS_FSL_SCFG_ADDR;
-	struct ccsr_gur __iomem *gur = (void *)CONFIG_SYS_FSL_GUTS_ADDR;
+	struct ccsr_scfg *scfg = (struct ccsr_scfg *)CFG_SYS_FSL_SCFG_ADDR;
+	struct ccsr_gur __iomem *gur = (void *)CFG_SYS_FSL_GUTS_ADDR;
 	struct fsl_ifc ifc = {(void *)CONFIG_SYS_IFC_ADDR, (void *)NULL};
 
 	/* Disable unused MCK1 */
@@ -109,12 +110,14 @@ int board_early_init_f(void)
 	return 0;
 }
 
-int misc_init_f(void)
+static int pg_wcom_misc_init_f(void *ctx, struct event *event)
 {
 	if (IS_ENABLED(CONFIG_PG_WCOM_UBOOT_UPDATE_SUPPORTED))
 		check_for_uboot_update();
+
 	return 0;
 }
+EVENT_SPY(EVT_MISC_INIT_F, pg_wcom_misc_init_f);
 
 int board_init(void)
 {

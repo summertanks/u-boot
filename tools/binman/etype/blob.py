@@ -31,20 +31,23 @@ class Entry_blob(Entry):
     the node (if enabled with -u) which provides the uncompressed size of the
     data.
     """
-    def __init__(self, section, etype, node):
-        super().__init__(section, etype, node)
+    def __init__(self, section, etype, node, auto_write_symbols=False):
+        super().__init__(section, etype, node,
+                         auto_write_symbols=auto_write_symbols)
         self._filename = fdt_util.GetString(self._node, 'filename', self.etype)
 
-    def ObtainContents(self):
+    def ObtainContents(self, fake_size=0):
         self._filename = self.GetDefaultFilename()
         self._pathname = tools.get_input_filename(self._filename,
             self.external and self.section.GetAllowMissing())
         # Allow the file to be missing
         if not self._pathname:
-            self._pathname = self.check_fake_fname(self._filename)
-            self.SetContents(b'')
+            self._pathname, faked = self.check_fake_fname(self._filename,
+                                                          fake_size)
             self.missing = True
-            return True
+            if not faked:
+                self.SetContents(b'')
+                return True
 
         self.ReadBlobContents()
         return True

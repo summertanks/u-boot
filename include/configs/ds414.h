@@ -19,11 +19,6 @@
 /* I2C */
 #define CONFIG_I2C_MVTWSI_BASE0		MVEBU_TWSI_BASE
 
-/* PCIe support */
-#ifndef CONFIG_SPL_BUILD
-#define CONFIG_PCI_SCAN_SHOW
-#endif
-
 /*
  * mv-common.h should be defined after CMD configs since it used them
  * to enable certain macros
@@ -45,17 +40,6 @@
 
 /* SPL */
 /* Defines for SPL */
-#define CONFIG_SPL_MAX_SIZE		((128 << 10) - (CONFIG_SPL_TEXT_BASE - 0x40000000))
-
-#define CONFIG_SPL_BSS_START_ADDR	(0x40000000 + (128 << 10))
-#define CONFIG_SPL_BSS_MAX_SIZE		(16 << 10)
-
-#ifdef CONFIG_SPL_BUILD
-#define CONFIG_SYS_MALLOC_SIMPLE
-#endif
-
-#define CONFIG_SPL_STACK		(0x40000000 + ((192 - 16) << 10))
-#define CONFIG_SPL_BOOTROM_SAVE		(CONFIG_SPL_STACK + 4)
 
 /* Default Environment */
 
@@ -66,7 +50,7 @@
 	"ethmtu=1500\0eth1mtu=1500\0"				\
 	"update_uboot=sf probe; dhcp; "				\
 		"mw.b ${loadaddr} 0x0 0xd0000; "		\
-		"tftpboot ${loadaddr} u-boot-spl.kwb; "		\
+		"tftpboot ${loadaddr} u-boot-with-spl.kwb; "	\
 		"sf update ${loadaddr} 0x0 0xd0000\0"
 
 

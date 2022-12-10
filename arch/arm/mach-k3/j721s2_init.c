@@ -22,8 +22,6 @@
 #include <mmc.h>
 #include <remoteproc.h>
 
-#ifdef CONFIG_SPL_BUILD
-
 static void ctrl_mmr_unlock(void)
 {
 	/* Unlock all WKUP_CTRL_MMR0 module registers */
@@ -91,7 +89,7 @@ static struct rom_extended_boot_data bootdata __section(".data");
 static void store_boot_info_from_rom(void)
 {
 	bootindex = *(u32 *)(CONFIG_SYS_K3_BOOT_PARAM_TABLE_INDEX);
-	memcpy(&bootdata, (uintptr_t *)ROM_ENTENDED_BOOT_DATA_INFO,
+	memcpy(&bootdata, (uintptr_t *)ROM_EXTENDED_BOOT_DATA_INFO,
 	       sizeof(struct rom_extended_boot_data));
 }
 
@@ -166,14 +164,14 @@ void board_init_f(ulong dummy)
 		if (ret)
 			panic("DRAM 0 init failed: %d\n", ret);
 
-		ret = uclass_next_device(&dev);
+		ret = uclass_next_device_err(&dev);
 		if (ret)
 			panic("DRAM 1 init failed: %d\n", ret);
 	}
 	spl_enable_dcache();
 }
 
-u32 spl_mmc_boot_mode(const u32 boot_device)
+u32 spl_mmc_boot_mode(struct mmc *mmc, const u32 boot_device)
 {
 	switch (boot_device) {
 	case BOOT_DEVICE_MMC1:
@@ -255,7 +253,6 @@ u32 spl_boot_device(void)
 	else
 		return __get_backup_bootmedia(main_devstat);
 }
-#endif
 
 #define J721S2_DEV_MCU_RTI0			295
 #define J721S2_DEV_MCU_RTI1			296

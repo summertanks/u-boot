@@ -7,6 +7,7 @@
  */
 
 #include <common.h>
+#include <display_options.h>
 #include <init.h>
 #include <asm/bitops.h>
 #include <asm/global_data.h>
@@ -40,11 +41,11 @@ __weak void init_tlbs(void)
 			  tlb_table[i].mas7);
 	}
 
-	return ;
+	return;
 }
 
 #if !defined(CONFIG_NAND_SPL) && \
-	(!defined(CONFIG_SPL_BUILD) || !defined(CONFIG_SPL_INIT_MINIMAL))
+	(!defined(CONFIG_SPL_BUILD) || !CONFIG_IS_ENABLED(INIT_MINIMAL))
 void read_tlbcam_entry(int idx, u32 *valid, u32 *tsize, unsigned long *epn,
 		       phys_addr_t *rpn)
 {
@@ -311,7 +312,10 @@ unsigned int setup_ddr_tlbs_phys(phys_addr_t p_addr,
 	if (size || memsize > CONFIG_MAX_MEM_MAPPED) {
 		print_size(memsize > CONFIG_MAX_MEM_MAPPED ?
 			   memsize - CONFIG_MAX_MEM_MAPPED + size : size,
-			   " left unmapped\n");
+			   " of DDR memory left unmapped in U-Boot\n");
+#ifndef CONFIG_SPL_BUILD
+		puts("       ");
+#endif
 	}
 
 	return memsize_in_meg;

@@ -31,8 +31,6 @@
 #define V_OSCK			26000000	/* Clock output from T2 */
 #define V_SCLK			(V_OSCK >> 1)
 
-#define CONFIG_UBI_SIZE			(512 << 10)
-
 /*
  * Hardware drivers
  */
@@ -43,7 +41,6 @@
 #define V_NS16550_CLK		48000000		/* 48MHz (APLL96/2) */
 
 #define CONFIG_SYS_NS16550_SERIAL
-#define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #define CONFIG_SYS_NS16550_CLK		V_NS16550_CLK
 
 /*
@@ -81,15 +78,16 @@
 	"kernaddr=0x82008000\0" \
 	"initrdaddr=0x84008000\0" \
 	"scriptaddr=0x86008000\0" \
+	"fileloadaddr=" __stringify(CONFIG_SYS_LOAD_ADDR) "\0" \
 	"fileload=${mmctype}load mmc ${mmcnum}:${mmcpart} " \
-		"${loadaddr} ${mmcfile}\0" \
-	"kernload=setenv loadaddr ${kernaddr};" \
+		"${fileloadaddr} ${mmcfile}\0" \
+	"kernload=setenv fileloadaddr ${kernaddr};" \
 		"setenv mmcfile ${mmckernfile};" \
 		"run fileload\0" \
-	"initrdload=setenv loadaddr ${initrdaddr};" \
+	"initrdload=setenv fileloadaddr ${initrdaddr};" \
 		"setenv mmcfile ${mmcinitrdfile};" \
 		"run fileload\0" \
-	"scriptload=setenv loadaddr ${scriptaddr};" \
+	"scriptload=setenv fileloadaddr ${scriptaddr};" \
 		"setenv mmcfile ${mmcscriptfile};" \
 		"run fileload\0" \
 	"scriptboot=echo Running ${mmcscriptfile} from mmc " \
@@ -154,7 +152,6 @@
  * This rate is divided by a local divisor.
  */
 #define CONFIG_SYS_TIMERBASE		(OMAP34XX_GPT2)
-#define CONFIG_SYS_PTV			2	/* Divisor: 2^(PTV+1) => 8 */
 
 /*
  * Physical Memory Map
@@ -168,8 +165,6 @@
 #define CONFIG_SYS_SDRAM_BASE		PHYS_SDRAM_1
 #define CONFIG_SYS_INIT_RAM_ADDR	0x4020f800
 #define CONFIG_SYS_INIT_RAM_SIZE	0x800
-#define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_INIT_RAM_ADDR + \
-			CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
 
 /*
  * Attached kernel image

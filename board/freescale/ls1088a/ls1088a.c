@@ -4,6 +4,7 @@
  */
 #include <common.h>
 #include <clock_legacy.h>
+#include <display_options.h>
 #include <env.h>
 #include <i2c.h>
 #include <init.h>
@@ -13,7 +14,6 @@
 #include <netdev.h>
 #include <fsl_ifc.h>
 #include <fsl_ddr.h>
-#include <fsl_sec.h>
 #include <asm/global_data.h>
 #include <asm/io.h>
 #include <fdt_support.h>
@@ -820,9 +820,6 @@ int board_init(void)
 	out_le32(irq_ccsr + IRQCR_OFFSET / 4, AQR105_IRQ_MASK);
 #endif
 
-#ifdef CONFIG_FSL_CAAM
-	sec_init();
-#endif
 #ifdef CONFIG_FSL_LS_PPA
 	ppa_init();
 #endif
@@ -1034,7 +1031,7 @@ int is_flash_available(void)
 #ifdef CONFIG_ENV_IS_IN_SPI_FLASH
 void *env_sf_get_env_addr(void)
 {
-	return (void *)(CONFIG_SYS_FSL_QSPI_BASE + CONFIG_ENV_OFFSET);
+	return (void *)(CFG_SYS_FSL_QSPI_BASE + CONFIG_ENV_OFFSET);
 }
 #endif
 #endif

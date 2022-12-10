@@ -15,24 +15,6 @@
 #define PHYS_SDRAM_1_SIZE		0x08000000	/* Max 128 MB RAM */
 #define CONFIG_SYS_SDRAM_BASE		PHYS_SDRAM_1
 
-/* Environment */
-
-/* Environment is in MMC */
-
-/* USB */
-#ifdef	CONFIG_CMD_USB
-#define CONFIG_EHCI_MXS_PORT0
-#define CONFIG_USB_MAX_CONTROLLER_COUNT 1
-#endif
-
-/* Framebuffer support */
-#ifdef CONFIG_DM_VIDEO
-#define CONFIG_SYS_VIDEO_LOGO_MAX_SIZE	(512 << 10)
-#endif
-
-/* Boot Linux */
-#define CONFIG_BOOTFILE		"uImage"
-
 /* Extra Environments */
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"update_sd_firmware_filename=u-boot.sd\0" \

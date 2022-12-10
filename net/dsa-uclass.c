@@ -432,7 +432,7 @@ static int dsa_post_bind(struct udevice *dev)
 		 * skip registration if port id not found or if the port
 		 * is explicitly disabled in DT
 		 */
-		if (!ofnode_valid(pnode) || !ofnode_is_available(pnode))
+		if (!ofnode_valid(pnode) || !ofnode_is_enabled(pnode))
 			continue;
 
 		err = device_bind_driver_to_node(dev, DSA_PORT_CHILD_DRV_NAME,
@@ -477,8 +477,10 @@ static int dsa_pre_probe(struct udevice *dev)
 		return -ENODEV;
 	}
 
-	uclass_find_device_by_ofnode(UCLASS_ETH, pdata->master_node,
-				     &priv->master_dev);
+	err = uclass_get_device_by_ofnode(UCLASS_ETH, pdata->master_node,
+					  &priv->master_dev);
+	if (err)
+		return err;
 
 	/* Simulate a probing event for the CPU port */
 	if (ops->port_probe) {

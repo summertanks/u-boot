@@ -13,7 +13,6 @@ import concurrent.futures
 import re
 import sys
 
-from binman import comp_util
 from binman.entry import Entry
 from binman import state
 from dtoc import fdt_util
@@ -163,6 +162,7 @@ class Entry_section(Entry):
         self._sort = False
         self._skip_at_start = None
         self._end_4gb = False
+        self._ignore_missing = False
 
     def ReadNode(self):
         """Read properties from the section node"""
@@ -233,10 +233,10 @@ class Entry_section(Entry):
                        todo)
         return True
 
-    def ExpandEntries(self):
-        super().ExpandEntries()
+    def gen_entries(self):
+        super().gen_entries()
         for entry in self._entries.values():
-            entry.ExpandEntries()
+            entry.gen_entries()
 
     def AddMissingProperties(self, have_image_pos):
         """Add new properties to the device tree as needed for this entry"""
@@ -246,7 +246,7 @@ class Entry_section(Entry):
         for entry in self._entries.values():
             entry.AddMissingProperties(have_image_pos)
 
-    def ObtainContents(self, skip_entry=None):
+    def ObtainContents(self, fake_size=0, skip_entry=None):
         return self.GetEntryContents(skip_entry=skip_entry)
 
     def GetPaddedDataForEntry(self, entry, entry_data):
@@ -385,7 +385,7 @@ class Entry_section(Entry):
         self._PackEntries()
         if self._sort:
             self._SortEntries()
-        self._ExpandEntries()
+        self._extend_entries()
 
         data = self.BuildSectionData(True)
         self.SetContents(data)
@@ -403,17 +403,17 @@ class Entry_section(Entry):
             offset = entry.Pack(offset)
         return offset
 
-    def _ExpandEntries(self):
-        """Expand any entries that are permitted to"""
+    def _extend_entries(self):
+        """Extend any entries that are permitted to"""
         exp_entry = None
         for entry in self._entries.values():
             if exp_entry:
-                exp_entry.ExpandToLimit(entry.offset)
+                exp_entry.extend_to_limit(entry.offset)
                 exp_entry = None
-            if entry.expand_size:
+            if entry.extend_size:
                 exp_entry = entry
         if exp_entry:
-            exp_entry.ExpandToLimit(self.size)
+            exp_entry.extend_to_limit(self.size)
 
     def _SortEntries(self):
         """Sort entries by offset"""
@@ -505,10 +505,54 @@ class Entry_section(Entry):
         node = self._node.GetFdt().LookupPhandle(phandle)
         if not node:
             source_entry.Raise("Cannot find node for phandle %d" % phandle)
-        for entry in self._entries.values():
-            if entry._node == node:
-                return entry.GetData(required)
-        source_entry.Raise("Cannot find entry for node '%s'" % node.name)
+        entry = self.FindEntryByNode(node)
+        if not entry:
+            source_entry.Raise("Cannot find entry for node '%s'" % node.name)
+        return entry.GetData(required)
+
+    def LookupEntry(self, entries, sym_name, msg):
+        """Look up the entry for an ENF  symbol
+
+        Args:
+            entries (dict): entries to search:
+                key: entry name
+                value: Entry object
+            sym_name: Symbol name in the ELF file to look up in the format
+                _binman_<entry>_prop_<property> where <entry> is the name of
+                the entry and <property> is the property to find (e.g.
+                _binman_u_boot_prop_offset). As a special case, you can append
+                _any to <entry> to have it search for any matching entry. E.g.
+                _binman_u_boot_any_prop_offset will match entries called u-boot,
+                u-boot-img and u-boot-nodtb)
+            msg: Message to display if an error occurs
+
+        Returns:
+            tuple:
+                Entry: entry object that was found
+                str: name used to search for entries (uses '-' instead of the
+                    '_' used by the symbol name)
+                str: property name the symbol refers to, e.g. 'image_pos'
+
+        Raises:
+            ValueError:the symbol name cannot be decoded, e.g. does not have
+                a '_binman_' prefix
+        """
+        m = re.match(r'^_binman_(\w+)_prop_(\w+)$', sym_name)
+        if not m:
+            raise ValueError("%s: Symbol '%s' has invalid format" %
+                             (msg, sym_name))
+        entry_name, prop_name = m.groups()
+        entry_name = entry_name.replace('_', '-')
+        entry = entries.get(entry_name)
+        if not entry:
+            if entry_name.endswith('-any'):
+                root = entry_name[:-4]
+                for name in entries:
+                    if name.startswith(root):
+                        rest = name[len(root):]
+                        if rest in ['', '-elf', '-img', '-nodtb']:
+                            entry = entries[name]
+        return entry, entry_name, prop_name
 
     def LookupSymbol(self, sym_name, optional, msg, base_addr, entries=None):
         """Look up a symbol in an ELF file
@@ -547,23 +591,9 @@ class Entry_section(Entry):
             ValueError if the symbol is invalid or not found, or references a
                 property which is not supported
         """
-        m = re.match(r'^_binman_(\w+)_prop_(\w+)$', sym_name)
-        if not m:
-            raise ValueError("%s: Symbol '%s' has invalid format" %
-                             (msg, sym_name))
-        entry_name, prop_name = m.groups()
-        entry_name = entry_name.replace('_', '-')
         if not entries:
             entries = self._entries
-        entry = entries.get(entry_name)
-        if not entry:
-            if entry_name.endswith('-any'):
-                root = entry_name[:-4]
-                for name in entries:
-                    if name.startswith(root):
-                        rest = name[len(root):]
-                        if rest in ['', '-img', '-nodtb']:
-                            entry = entries[name]
+        entry, entry_name, prop_name = self.LookupEntry(entries, sym_name, msg)
         if not entry:
             err = ("%s: Entry '%s' not found in list (%s)" %
                    (msg, entry_name, ','.join(entries.keys())))
@@ -776,7 +806,7 @@ class Entry_section(Entry):
         data = parent_data[offset:offset + child.size]
         if decomp:
             indata = data
-            data = comp_util.decompress(indata, child.compress)
+            data = child.DecompressData(indata)
             if child.uncomp_size:
                 tout.info("%s: Decompressing data size %#x with algo '%s' to data size %#x" %
                             (child.GetPath(), len(indata), child.compress,
@@ -786,6 +816,9 @@ class Entry_section(Entry):
             if new_data is not None:
                 data = new_data
         return data
+
+    def WriteData(self, data, decomp=True):
+        self.Raise("Replacing sections is not implemented yet")
 
     def WriteChildData(self, child):
         return True
@@ -894,6 +927,7 @@ class Entry_section(Entry):
         for entry in self._entries.values():
             entry.CheckAltFormats(alt_formats)
 
-    def AddBintools(self, tools):
+    def AddBintools(self, btools):
+        super().AddBintools(btools)
         for entry in self._entries.values():
-            entry.AddBintools(tools)
+            entry.AddBintools(btools)
