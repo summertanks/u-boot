@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Harkirat S Virk <harkiratsvirk@gmail.com>
+ * Copyright (C) 2022 Harkirat S Virk <harkiratsvirk@gmail.com>
  */
 
 #include <init.h>
@@ -33,6 +33,24 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #define QSPI_PAD_CTRL (PAD_CTL_SRE_FAST | PAD_CTL_SPEED_HIGH | \
 	 PAD_CTL_PKE | PAD_CTL_PUE | PAD_CTL_PUS_47K_UP | PAD_CTL_DSE_40ohm)
+
+/* TODO: Setup the PMIC */
+#ifdef CONFIG_DM_PMIC
+int power_init_board(void)
+{
+	/* identify PMIC*/
+	;
+	/* disable Low Power Mode during standby mode */
+	;
+	/* SW1B step ramp up time from 2us to 4us/25mV */
+	;
+	/* SW1B mode to APS/PFM */
+	;
+	/* SW1B standby voltage set to 0.975V */
+	;
+	return 0;
+}
+#endif
 
 int dram_init(void)
 {
@@ -155,6 +173,6 @@ int board_late_init(void)
 int checkboard(void)
 {
 	puts("Board: MX6UL Caisteal MKV Secure Storage System\n");
-	puts("(c) 2021 Harkirat S Virk <harkiratsvirk@gmail.com>\n");
+	puts("(c) 2022 Harkirat S Virk <harkiratsvirk@gmail.com>\n");
 	return 0;
 }

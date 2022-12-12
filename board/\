@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Harkirat S Virk <harkiratsvirk@gmail.com>
+ * Copyright (C) 2021 Harkirat S Virk <harkiratsvirk@gmail.com>
  */
 
 #include <config.h>
@@ -13,7 +13,6 @@ IMAGE_VERSION 2
  * spi/sd/nand/onenand, qspi/nor
  */
 
-/* TODO: Only restrict to qspi */ 
 #ifdef CONFIG_QSPI_BOOT
 BOOT_FROM	qspi
 #elif defined(CONFIG_NOR_BOOT)

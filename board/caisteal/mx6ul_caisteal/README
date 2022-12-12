@@ -6,7 +6,7 @@
 The following packages are generically required for development work on u-boot.
 It is strongly advised to check [uboot](https://github.com/u-boot/u-boot) repository for greater details
 ```
-gawk wget git-core diffstat unzip build-essential chrpath libsdl1.2-dev xterm curl texinfo lzop nfs-kernel-server gcc-arm-linux-gnueabihf bison flex
+gawk wget git-core diffstat unzip build-essential chrpath libsdl1.2-dev xterm curl texinfo lzop nfs-kernel-server gcc-arm-linux-gnueabihf bison flex libssl-dev
 ```
 
 ### Environment Variables
