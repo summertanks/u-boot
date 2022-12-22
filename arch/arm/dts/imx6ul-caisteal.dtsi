@@ -3,7 +3,7 @@
 
 / {
 	aliases {
-		// spi0 = &qspi;
+		spi0 = &qspi;
 	};
 
 	memory@80000000 {
@@ -75,7 +75,7 @@
 		spi-tx-bus-width = <4>;
 		reg = <0>;
 		spi-mode = <0>;
-                m25p,fast-read;
+		m25p,fast-read;
 		status = "okay";
 
 		partition@uboot {

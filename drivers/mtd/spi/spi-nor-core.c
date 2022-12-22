@@ -1368,9 +1368,12 @@ static const struct flash_info *spi_nor_read_id(struct spi_nor *nor)
 		dev_dbg(nor->dev, "error %d reading JEDEC ID\n", tmp);
 		return ERR_PTR(tmp);
 	}
+	dev_dbg(nor->dev, "nor->reg : %d JEDEC id bytes: %02x, %02x, %02x, %02x, %02x, %02x\n", 
+			tmp, id[0], id[1], id[2], id[3], id[4], id[5]);
 
 	info = spi_nor_ids;
 	for (; info->name; info++) {
+		dev_dbg(nor->dev, "name %s id_len %d\n", info->name, info->id_len);
 		if (info->id_len) {
 			if (!memcmp(info->id, id, info->id_len))
 				return info;

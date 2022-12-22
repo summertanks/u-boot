@@ -35,7 +35,6 @@
 #define CONFIG_SYS_I2C_SPEED		100000
 #endif
 
-// #define CONFIG_SYS_MMC_IMG_LOAD_PART	1
 
 #define CONFIG_MFG_ENV_SETTINGS \
 	"initrd_addr=0x86800000\0" \
